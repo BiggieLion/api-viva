@@ -17,7 +17,8 @@ jobs:
         run: npm ci
 
       - name: Initialize Git user
-        run: git config --global user.email "hleonr1300@alumno.ipn.mx"
+        run: |
+          git config --global user.email "hleonr1300@alumno.ipn.mx"
           git config --global user.name "Release workflow"
 
       - name: Release to GitHub
