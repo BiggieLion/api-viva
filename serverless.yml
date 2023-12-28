@@ -1,9 +1,10 @@
 service: api-viva
-frameworkVersion: '3'
+frameworkVersion: "3"
 
 provider:
   name: aws
   runtime: nodejs18.x
+  region: us-east-1
 
 functions:
   api:
@@ -12,3 +13,22 @@ functions:
       - httpApi:
           path: /
           method: get
+
+resources:
+  Resources:
+    DemoBucketUpload:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: vivaaerobucket123123
+
+plugins:
+  - serverless-s3-sync
+  - serverless-webpack
+
+package:
+  individually: true
+
+custom:
+  s3Sync:
+    - bucketName: vivaaerobucket123123
+      localDir: UploadData

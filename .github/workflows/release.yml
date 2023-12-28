@@ -1,0 +1,60 @@
+name: Release new version to GitHub and deploy it to AWS Lambda
+
+on:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  merged-and-release-to-github:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v3
+
+      - name: Install the depencencies
+        run: npm ci
+
+      - name: Initialize Git user
+        run: |
+          git config --global user.email "hleonr1300@alumno.ipn.mx"
+          git config --global user.name "Release workflow"
+
+      - name: Release to GitHub
+        run: npm run release --ci
+        env:
+          GITHUB_TOKEN: ${{ secrets.TOKEN_GITHUB }}
+
+      - name: Release done
+        run: echo "Release done"
+
+  merged-and-deploy-to-aws-lambda:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Install the depencencies
+        run: npm ci
+
+      - name: Deploy to AWS Lambda
+        uses: serverless/github-action@master
+        with:
+          args: -c "serverless plugin install --name serverless-s3-sync && serverless plugin install --name serverless-webpack && serverless deploy"
+          entrypoint: /bin/sh
+        env:
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          AWS_REGION: us-east-1
+
+      - name: Deploy done
+        run: echo "Deploy done"
