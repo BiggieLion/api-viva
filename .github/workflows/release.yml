@@ -1,13 +1,12 @@
 name: Release new version to GitHub and deploy it to AWS Lambda
 
 on:
-  pull_request:
-    types:
-      - closed
+  push:
+    branches:
+      - main
 
 jobs:
   merged-and-release-to-github:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source code
@@ -30,7 +29,6 @@ jobs:
         run: echo "Release done"
 
   merged-and-deploy-to-aws-lambda:
-    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     strategy:
       matrix:
