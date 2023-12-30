@@ -1,7 +1,7 @@
 {
   "version": "1.0.3",
   "scripts": {
-    "deploy": "serverless deploy --verbose",
+    "deploy": "serverless deploy",
     "lint": "eslint . --ext .js",
     "lint:fix": "eslint . --ext .js --fix",
     "release": "release-it"
@@ -16,6 +16,9 @@
   },
   "dependencies": {
     "@release-it/conventional-changelog": "^8.0.1",
+    "csv": "^6.3.6",
+    "json2csv": "^6.0.0-alpha.2",
+    "parse-multipart": "^1.0.4",
     "release-it": "^17.0.1",
     "serverless-s3-sync": "^3.2.0",
     "serverless-webpack": "^5.13.0"

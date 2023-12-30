@@ -5,6 +5,16 @@ provider:
   name: aws
   runtime: nodejs18.x
   region: us-east-1
+  apiGateway:
+    binaryMediaTypes:
+      - "*/*"
+  environment:
+    bucketName: ${self:custom.bucketName}
+  iamRoleStatements:
+    - Effect: "Allow"
+      Action:
+        - s3:*
+      Resource: "*"
 
 functions:
   api:
@@ -14,12 +24,19 @@ functions:
           path: /
           method: get
 
+  uploader:
+    handler: lambdas/getFile.handler
+    events:
+      - httpApi:
+          path: /upload
+          method: post
+
 resources:
   Resources:
     DemoBucketUpload:
       Type: AWS::S3::Bucket
       Properties:
-        BucketName: vivaaerobucket123123
+        BucketName: ${self:custom.bucketName}
 
 plugins:
   - serverless-s3-sync
@@ -30,5 +47,6 @@ package:
 
 custom:
   s3Sync:
-    - bucketName: vivaaerobucket123123
+    - bucketName: ${self:custom.bucketName}
       localDir: UploadData
+  bucketName: vivaaerobucket123123
