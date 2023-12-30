@@ -1,5 +1,5 @@
 {
-  "version": "1.0.3",
+  "version": "1.0.4",
   "scripts": {
     "deploy": "serverless deploy",
     "lint": "eslint . --ext .js",
