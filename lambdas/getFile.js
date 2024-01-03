@@ -11,9 +11,6 @@ module.exports.handler = async (event) => {
   try {
     const { filename, data } = extractFile(event);
 
-    let rawFilename = `raw_${filename}`;
-    let cleanFilename = `clean_${filename}`;
-
     const csvArray = data
       .toString()
       .split("\r\n")
@@ -21,28 +18,20 @@ module.exports.handler = async (event) => {
 
     let rawArray = parseCSVtoJSON(csvArray);
 
-    const rawCSV = parseJSONtoCSV(rawArray);
-
     let cleanArray = removeDuplicates(rawArray);
+
+    const rawData = await S3.write(data, `raw_${filename}`, bucket).catch(
+      (err) => {
+        console.error("Error writing raw file to S3", err);
+        return null;
+      }
+    );
 
     const cleanArrayData = parseJSONtoCSV(cleanArray);
 
-    if (S3.verify(rawFilename, bucket) == 1) {
-      rawFilename = `${new Date().toLocaleDateString()}_${rawFilename}`;
-    }
-
-    if (S3.verify(cleanFilename, bucket) == 1) {
-      cleanFilename = `${new Date().toLocaleDateString()}_${cleanFilename}`;
-    }
-
-    const rawData = await S3.write(rawCSV, rawFilename, bucket).catch((err) => {
-      console.error("Error writing raw file to S3", err);
-      return null;
-    });
-
     const cleanData = await S3.write(
       cleanArrayData,
-      cleanFilename,
+      `clean_${filename}`,
       bucket
     ).catch((err) => {
       console.error("Error writing clean file to S3", err);
@@ -53,10 +42,10 @@ module.exports.handler = async (event) => {
       return HTTP_RESPONSES._500({ message: "Error writing old file to S3" });
     }
 
-    return HTTP_RESPONSES._any(201, {
+    return HTTP_RESPONSES._200({
       message: "File uploaded successfully",
-      rawFilename,
-      cleanFilename,
+      rawObjectURL: `https://${bucket}.s3.amazonaws.com/raw_${filename}`,
+      cleanObjectURL: `https://${bucket}.s3.amazonaws.com/clean_${filename}`,
     });
   } catch (error) {
     return HTTP_RESPONSES._500({ message: error.message, error });
