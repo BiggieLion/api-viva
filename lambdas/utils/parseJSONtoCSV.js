@@ -1,7 +1,15 @@
-const parser = require("json2csv");
-
 module.exports = (jsonArray) => {
-  const fields = Object.keys(jsonArray[0]);
+  const headers = Object.keys(jsonArray[0]);
+  const replacer = (key, value) => (value === null ? "" : value);
 
-  return parser.parse(jsonArray, { fields });
+  const csvString = [
+    headers.join(","),
+    ...jsonArray.map((row) =>
+      headers
+        .map((fieldName) => JSON.stringify(row[fieldName], replacer))
+        .join(",")
+    ),
+  ].join("\r\n");
+
+  return csvString;
 };

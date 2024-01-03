@@ -1,5 +1,5 @@
 {
-  "version": "1.0.3",
+  "version": "1.0.6",
   "scripts": {
     "deploy": "serverless deploy",
     "lint": "eslint . --ext .js",
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@release-it/conventional-changelog": "^8.0.1",
-    "csvtojson": "^2.0.10",
+    "csv": "^6.3.6",
     "json2csv": "^6.0.0-alpha.2",
     "parse-multipart": "^1.0.4",
     "release-it": "^17.0.1",

@@ -22,26 +22,10 @@ const S3 = {
     return data;
   },
 
-  async getReadStream(fileName, bucket) {
-    const params = {
-      Bucket: bucket,
-      Key: fileName,
-    };
-
-    const data = await s3Client.getObject(params).createReadStream();
-
-    if (!data) {
-      throw Error(`There was an error getting ${fileName} from ${bucket}`);
-    }
-
-    return data;
-  },
-
   async write(data, fileName, bucket) {
     const params = {
       Bucket: bucket,
-      Body: data,
-      ContentType: "text/csv",
+      Body: JSON.stringify(data),
       Key: fileName,
     };
 
@@ -52,26 +36,6 @@ const S3 = {
     }
 
     return newData;
-  },
-
-  async verify(filename, bucket) {
-    const params = {
-      Bucket: bucket,
-      Key: filename,
-    };
-
-    s3Client.headObject(params, function (err, metadata) {
-      if (err) {
-        console.error("Error on headObject", err);
-        if (err.name === "NotFound") {
-          return 0;
-        } else {
-          return -1;
-        }
-      } else {
-        return 1;
-      }
-    });
   },
 };
 
