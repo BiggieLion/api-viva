@@ -25,11 +25,18 @@ functions:
           method: get
 
   uploader:
-    handler: lambdas/getFile.handler
+    handler: lambdas/putFiles.handler
     events:
       - httpApi:
           path: /upload
           method: post
+
+  searcher:
+    handler: lambdas/searchUsersData.handler
+    events:
+      - httpApi:
+          path: /search
+          method: get
 
 resources:
   Resources:
@@ -39,14 +46,10 @@ resources:
         BucketName: ${self:custom.bucketName}
 
 plugins:
-  - serverless-s3-sync
   - serverless-webpack
 
 package:
   individually: true
 
 custom:
-  s3Sync:
-    - bucketName: ${self:custom.bucketName}
-      localDir: UploadData
   bucketName: vivaaerobucket123123
